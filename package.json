@@ -5,7 +5,7 @@
   "description": "Unofficial clickup cli with some extra awesome",
   "main": "index.js",
   "bin": {
-    "cu-cli": "./index.js"
+    "cu-cli": " node ./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
