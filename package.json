@@ -1,0 +1,39 @@
+{
+  "name": "clickup-cli",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Unofficial clickup cli with some extra awesome",
+  "main": "index.js",
+  "bin": {
+    "cu-cli": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cu-cli": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattaylor/clickup-cli.git"
+  },
+  "keywords": [
+    "clickup",
+    "cli",
+    "scheduler",
+    "issues",
+    "projects"
+  ],
+  "author": "mat.taylor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattaylor/clickup-cli/issues"
+  },
+  "homepage": "https://github.com/mattaylor/clickup-cli#readme",
+  "dependencies": {
+    "axios": "^0.25.0",
+    "clickup_api": "^1.1.2",
+    "commander": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}
