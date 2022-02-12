@@ -1,7 +1,7 @@
 {
   "defaults": {
-     "list": '<default_list_id>',
-     "assignees": ['<default_assignee>'],
+     "list": "<default_list_id>",
+     "assignees": ["<default_assignee>"],
      "priority": 3,
      "points": 3
   },
