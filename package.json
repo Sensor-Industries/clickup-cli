@@ -1,11 +1,11 @@
 {
   "name": "clickup-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Unofficial clickup cli with some extra awesome",
   "main": "index.js",
   "bin": {
-    "cu-cli": " node ./index.js"
+    "cu-cli": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
