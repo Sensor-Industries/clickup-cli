@@ -13,18 +13,21 @@ A Simple Command line Utility to create tasks, subtask and comments in clickup
 
 ```
 > cu-cli help
-
 Usage: cu-cli [options] [command]
 
 clickup cli
 
 Options:
-  -h, --help                             display help for command
+  -d, --debug
+  -c, --config                              Configuration File
+  -h, --help                                display help for command
 
 Commands:
-  task [options] <name> [desc]           create task
-  comment [options] <task_id> [message]  add comment
-  help [command]                         display help for command
+  create [options] <name> [desc]            create task
+  update [options] <task_id> [name] [desc]  update task
+  delete <task_id>                          delete task
+  comment [options] <task_id> [message]     add comment
+  help [command]                            display help for command
 ```
 
 
