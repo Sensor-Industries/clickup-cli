@@ -12,7 +12,7 @@ capp.name('cu-cli').description('clickup cli')
 
 capp.option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
   .hook('preAction', async (cmd) => {
-    config = JSON.parse(await fs.readFile(cmd.opts().config, 'utf8'))
+    config = Object.assign({users:{}, lists:{}},JSON.parse(await fs.readFile(cmd.opts().config, 'utf8')))
     capi.defaults.headers.common['Authorization'] = config.auth
     config.debug = cmd.opts().debug 
     if (config.debug) console.log('CONFIG:', config)
@@ -80,7 +80,9 @@ const log = (r) => console.log(config.debug ? r.data : r.data.id)
 
 function merge(opts, extra={}) {
   if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
+  if (config.users[opts.assignee]) opts.assignee = config.users[opts.assignee]
   if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
+  if (config.lists[opts.list]) opts.list = config.lists[opts.list]
   return opts.json
     ? Object.assign(config.defaults, opts, JSON.parse(opts.json), extra)
     : Object.assign(config.defaults, opts, extra)
