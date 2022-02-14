@@ -14,6 +14,7 @@ const log = (r) => console.log(config.debug ? r.data : r.data.id)
 const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
 
 const capp = new Command()
+
 capp.name('cu-cli').description('clickup cli')
   .option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
   .hook('preAction', (cmd) => {
@@ -23,7 +24,7 @@ capp.name('cu-cli').description('clickup cli')
     if (config.debug) console.log('CONFIG:', config)
   })
 
-capp.command('create').description('create task')
+capp.command('create').description('Create task')
   .argument('<name>', 'Task Name').argument('[desc]', 'Task Description')
   .option('-f, --file <filePath>', 'Markdown Description from file')
   .option('-t, --parent <task_id>', 'Parent Task Id')
@@ -42,7 +43,7 @@ capp.command('create').description('create task')
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
-capp.command('update').description('update task')
+capp.command('update').description('Update task')
   .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name').argument('[desc]', 'Description')
   .option('-f, --file <filePath>', 'Markdown Description from file')
   .option('-t, --parent <task_id>', 'Parent Task Id')
@@ -59,7 +60,7 @@ capp.command('update').description('update task')
     capi.put('task/'+task_id, data).then(log).catch(err)
   })
 
-capp.command('delete').description('delete task')
+capp.command('delete').description('Delete task')
   .argument('<task_id>', 'Task Id')
   .action(async (tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
