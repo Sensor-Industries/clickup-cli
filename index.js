@@ -1,7 +1,9 @@
 #! /usr/bin/env node
 
 import { Command } from 'commander'
-import { promises as fs } from 'fs'
+//import { promises as fs } from 'fs'
+import fs from 'fs'
+
 import os from 'os'
 import capi from 'axios'
 
@@ -10,9 +12,14 @@ const capp = new Command()
 capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
 capp.name('cu-cli').description('clickup cli')
 
+const err = (e) => console.log(e.response.status, e.response.data)
+const log = (r) => console.log(config.debug ? r.data : r.data.id)
+//const read = async (f) => (await fs.readFile(f, 'utf-8')).replace(/\`/g, '\\`')
+const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\\`')
+
 capp.option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
-  .hook('preAction', async (cmd) => {
-    config = Object.assign({users:{}, lists:{}},JSON.parse(await fs.readFile(cmd.opts().config, 'utf8')))
+  .hook('preAction', (cmd) => {
+    config = Object.assign({users:{}, lists:{}}, JSON.parse(fs.readFileSync(cmd.opts().config, 'utf8')))
     capi.defaults.headers.common['Authorization'] = config.auth
     config.debug = cmd.opts().debug 
     if (config.debug) console.log('CONFIG:', config)
@@ -30,10 +37,11 @@ capp.command('create').description('create task')
   .option('-p, --points <points>', 'Sprint Points')
   .option('-j, --json <json>', 'Custom Fields as JSON')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
-  .action(async (name, desc, opts) => {
+  .action((name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
-    if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
-    if (config.debug) console.log('PAYLOAD:', data, opts)
+    if (opts.file) data.markdown_description = read(opts.file)
+    data.content = data.markdown_description
+    if (config.debug) console.log('PAYLOAD:', data)
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
@@ -50,9 +58,9 @@ capp.command('update').description('update task')
   .option('-p, --points <points>', 'Sprint Points')
   .option('-j, --json <json>', 'Custom Fields as JSON')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
-  .action(async (tid, name, desc, opts) => {
+  .action((tid, name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
-    if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
+    if (opts.file) data.markdown_description = read(opts.file)
     capi.put('task/'+task_id, data).then(log).catch(err)
   })
 
@@ -67,16 +75,13 @@ capp.command('comment')
   .option('-f, --file <filePath>', 'Read from file')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
-  .action(async (tid, msg, opts) => {
+  .action((tid, msg, opts) => {
     let data = merge(opts, { comment_text: msg })
-    if (opts.file) data.comment_text = await fs.readFile(opts.file, 'utf8')
+    if (opts.file) data.comment_text = read(opts.file)
     capi.post('task/'+tid+'/comment', data).then(log).catch(err)
   })
 
 capp.parse()
-
-const err = (e) => console.log(e.response.status, e.response.data)
-const log = (r) => console.log(config.debug ? r.data : r.data.id)
 
 function merge(opts, extra={}) {
   if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
