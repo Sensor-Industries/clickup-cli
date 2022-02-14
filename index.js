@@ -15,7 +15,7 @@ capp.name('cu-cli').description('clickup cli')
 const err = (e) => console.log(e.response.status, e.response.data)
 const log = (r) => console.log(config.debug ? r.data : r.data.id)
 //const read = async (f) => (await fs.readFile(f, 'utf-8')).replace(/\`/g, '\\`')
-const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\\`')
+const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
 
 capp.option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
   .hook('preAction', (cmd) => {
