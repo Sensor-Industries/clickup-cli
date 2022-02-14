@@ -82,7 +82,6 @@ capp.command('comment')
       if (opts.file) data.comment_text = await fs.readFile(opts.file, 'utf8')
       let res = await capi.Comments.create_task_comment(tid, data)
       return opts.debug ? res : null
-    
     } catch(e) { return e.toString() }
   })
 
