@@ -15,7 +15,7 @@ capp.option('-d, --debug').option('-c, --config', 'Configuration File', os.homed
   .hook('preAction', async (cmd) => {
     config = JSON.parse(await fs.readFile(cmd.opts().config, 'utf8'))
     capi = new clickup_api(config.auth)
-    if (cmd.opts().debug) console.log(config)
+    if (cmd.opts().debug) console.log('CONFIG:', config)
   })
 
 capp.command('create').description('create task')
@@ -31,12 +31,10 @@ capp.command('create').description('create task')
   .option('-j, --json <json>', 'Custom Fields as JSON')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
   .action(async (name, desc, opts) => {
-    try {
-      let data = merge(opts, { name: name, content: desc})
-      if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
-      let res = await capi.Tasks.create_task(opts.list || config.defaults.list, data)
-      return opts.debug ? res : null
-    } catch (e) { return e.toString() }
+    let data = merge(opts, { name: name, content: desc})
+    if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
+    if (opts.debug) console.log('PAYLOAD:', data, opts)
+    return await capi.Tasks.create_task(opts.list || config.defaults.list, data).catch(console.log)
   })
 
 capp.command('update').description('update task')
@@ -53,20 +51,15 @@ capp.command('update').description('update task')
   .option('-j, --json <json>', 'Custom Fields as JSON')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
   .action(async (tid, name, desc, opts) => {
-    try {
-      let data = merge(opts, { name: name, content: desc})
-      if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
-      let res = await capi.Tasks.update_task(task_id, data)
-      return opts.debug ? res : null
-    } catch (e) { return e.toString() }
+    let data = merge(opts, { name: name, content: desc})
+    if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
+    return await capi.Tasks.update_task(task_id, data).catch(console.log)
   })
 
 capp.command('delete').description('delete task')
   .argument('<task_id>', 'Task Id')
   .action(async (tid, opts) => {
-    try {
-      return await capi.Tasks.delete_task(tid)
-    } catch (e) { return e.toString() }
+    return await capi.Tasks.delete_task(tid).catch(console.log)
   })
 
 capp.command('comment')
@@ -77,12 +70,9 @@ capp.command('comment')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
   .action(async (tid, msg, opts) => {
-    try {
-      let data = merge(opts, { comment_text: msg })
-      if (opts.file) data.comment_text = await fs.readFile(opts.file, 'utf8')
-      let res = await capi.Comments.create_task_comment(tid, data)
-      return opts.debug ? res : null
-    } catch(e) { return e.toString() }
+    let data = merge(opts, { comment_text: msg })
+    if (opts.file) data.comment_text = await fs.readFile(opts.file, 'utf8')
+    return await capi.Comments.create_task_comment(tid, data).catch(console.log)
   })
 
 capp.parse()
