@@ -20,7 +20,7 @@ capp.name('cu-cli').description('clickup cli')
   .hook('preAction', (cmd) => {
     config = Object.assign({users:{}, lists:{}}, JSON.parse(read(cmd.opts().config)))
     capi.defaults.headers.common['Authorization'] = config.auth
-    config.debug = cmd.opts().debug 
+    config.debug = cmd.opts().debug
     if (config.debug) console.log('CONFIG:', config)
   })
 
@@ -38,7 +38,6 @@ capp.command('create').description('Create task')
   .action((name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
     if (opts.file) data.markdown_description = read(opts.file)
-    data.content = data.markdown_description
     if (config.debug) console.log('PAYLOAD:', data)
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
@@ -57,12 +56,12 @@ capp.command('update').description('Update task')
   .action((tid, name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
     if (opts.file) data.markdown_description = read(opts.file)
-    capi.put('task/'+task_id, data).then(log).catch(err)
+    capi.put('task/'+tid, data).then(log).catch(err)
   })
 
 capp.command('delete').description('Delete task')
   .argument('<task_id>', 'Task Id')
-  .action(async (tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
+  .action((tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
 capp.command('comment').description('add comment')
   .argument('<task_id>', 'Task Id').argument('[message]', 'Comment Text')
