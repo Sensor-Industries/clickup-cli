@@ -34,8 +34,7 @@ capp.command('create').description('create task')
     let data = merge(opts, { name: name, content: desc})
     if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
     if (config.debug) console.log('PAYLOAD:', data, opts)
-    let res = await capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).catch(console.log)
-    console.log(config.debug ? res.data : res.data.id)
+    capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
 capp.command('update').description('update task')
@@ -54,15 +53,12 @@ capp.command('update').description('update task')
   .action(async (tid, name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
     if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
-    let res = await capi.put('task/'+task_id, data).catch(console.log)
-    console.log(config.debug ? res.data : res.data.id)
+    capi.put('task/'+task_id, data).then(log).catch(err)
   })
 
 capp.command('delete').description('delete task')
   .argument('<task_id>', 'Task Id')
-  .action(async (tid, opts) => {
-    return await capi.delete('task/'+tid).catch(console.log)
-  })
+  .action(async (tid, opts) => await capi.delete('task/'+tid).then(log).catch(err))
 
 capp.command('comment')
   .description('add comment')
@@ -74,10 +70,13 @@ capp.command('comment')
   .action(async (tid, msg, opts) => {
     let data = merge(opts, { comment_text: msg })
     if (opts.file) data.comment_text = await fs.readFile(opts.file, 'utf8')
-    return await capi.post('task/'+tid+'/comment', data).catch(console.log)
+    capi.post('task/'+tid+'/comment', data).then(log).catch(err)
   })
 
 capp.parse()
+
+const err = (e) => console.log(e.response.status, e.response.data)
+const log = (r) => console.log(config.debug ? r.data : r.data.id)
 
 function merge(opts, extra={}) {
   if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
