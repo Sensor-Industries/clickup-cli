@@ -32,7 +32,7 @@ capp.command('create').description('create task')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
   .action(async (name, desc, opts) => {
     try {
-      let data = Object.assign(config.defaults, opts, { name: name, content: desc})
+      let data = merge(opts, { name: name, content: desc})
       if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
       let res = await capi.Tasks.create_task(opts.list || config.defaults.list, data)
       return opts.debug ? res : null
@@ -54,7 +54,7 @@ capp.command('update').description('update task')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
   .action(async (tid, name, desc, opts) => {
     try {
-      let data = Object.assign(config.defaults, opts, { name: name, content: desc})
+      let data = merge(opts, { name: name, content: desc})
       if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
       let res = await capi.Tasks.update_task(task_id, data)
       return opts.debug ? res : null
@@ -78,7 +78,7 @@ capp.command('comment')
   .option('-a, --assignee <user_id>', 'Assign to user')
   .action(async (tid, msg, opts) => {
     try {
-      let data = Object.assign(opts, { comment_text: msg })
+      let data = merge(opts, { comment_text: msg })
       if (opts.file) data.comment_text = await fs.readFile(opts.file, 'utf8')
       let res = await capi.Comments.create_task_comment(tid, data)
       return opts.debug ? res : null
@@ -88,8 +88,8 @@ capp.command('comment')
 capp.parse()
 
 function merge(opts, extra={}) {
-  opts.assignees ??= opts.assignees.map(_ => config.users[_] || _)
-  opts.lists ??= opts.lists.map(_ => config.lists[_] || _)
+  if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
+  if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
   return opts.json
     ? Object.assign(config.defaults, opts, JSON.parse(opts.json), extra)
     : Object.assign(config.defaults, opts, extra)
