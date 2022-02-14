@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 
 import { Command } from 'commander'
-import clickup_api from 'clickup_api'
 import { promises as fs } from 'fs'
 import os from 'os'
 import capi from 'axios'
