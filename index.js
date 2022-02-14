@@ -2,18 +2,15 @@
 
 import { Command } from 'commander'
 import fs from 'fs'
-
 import os from 'os'
 import capi from 'axios'
-
-let config = {}
-capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
 
 const err = (e) => console.log(e.response.status, e.response.data)
 const log = (r) => console.log(config.debug ? r.data : r.data.id)
 const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
-
 const capp = new Command()
+let config = {}
+capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
 
 capp.name('cu-cli').description('clickup cli')
   .option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
