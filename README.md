@@ -5,7 +5,7 @@ A Simple Command line Utility to create tasks, subtask and comments in clickup
 ### Install
 
 1. `> npm -i -g clickup-cli`
-2. Copy sample.clickup to ~/.clickup
+2. Copy config.json to ~/.clickup
 3. Edit `~/.clickup` with default and auth token from your clickup account
 4. `> cu-cli help`
 
