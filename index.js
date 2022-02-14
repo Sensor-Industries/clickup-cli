@@ -1,33 +1,30 @@
 #! /usr/bin/env node
 
 import { Command } from 'commander'
-//import { promises as fs } from 'fs'
 import fs from 'fs'
 
 import os from 'os'
 import capi from 'axios'
 
 let config = {}
-const capp = new Command()
 capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
-capp.name('cu-cli').description('clickup cli')
 
 const err = (e) => console.log(e.response.status, e.response.data)
 const log = (r) => console.log(config.debug ? r.data : r.data.id)
-//const read = async (f) => (await fs.readFile(f, 'utf-8')).replace(/\`/g, '\\`')
 const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
 
-capp.option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
+const capp = new Command()
+capp.name('cu-cli').description('clickup cli')
+  .option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
   .hook('preAction', (cmd) => {
-    config = Object.assign({users:{}, lists:{}}, JSON.parse(fs.readFileSync(cmd.opts().config, 'utf8')))
+    config = Object.assign({users:{}, lists:{}}, JSON.parse(read(cmd.opts().config)))
     capi.defaults.headers.common['Authorization'] = config.auth
     config.debug = cmd.opts().debug 
     if (config.debug) console.log('CONFIG:', config)
   })
 
 capp.command('create').description('create task')
-  .argument('<name>', 'Task Name')
-  .argument('[desc]', 'Task Description')
+  .argument('<name>', 'Task Name').argument('[desc]', 'Task Description')
   .option('-f, --file <filePath>', 'Markdown Description from file')
   .option('-t, --parent <task_id>', 'Parent Task Id')
   .option('-i, --priority <priority>', 'Task Priority (1-5)')
@@ -46,9 +43,7 @@ capp.command('create').description('create task')
   })
 
 capp.command('update').description('update task')
-  .argument('<task_id>', 'Task Id')
-  .argument('[name]', 'Task Name')
-  .argument('[desc]', 'Task Description')
+  .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name').argument('[desc]', 'Description')
   .option('-f, --file <filePath>', 'Markdown Description from file')
   .option('-t, --parent <task_id>', 'Parent Task Id')
   .option('-i, --priority <importance>', 'Task Priority (1-5)')
@@ -66,12 +61,10 @@ capp.command('update').description('update task')
 
 capp.command('delete').description('delete task')
   .argument('<task_id>', 'Task Id')
-  .action(async (tid, opts) => await capi.delete('task/'+tid).then(log).catch(err))
+  .action(async (tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
-capp.command('comment')
-  .description('add comment')
-  .argument('<task_id>', 'Task Id')
-  .argument('[message]', 'Comment Text')
+capp.command('comment').description('add comment')
+  .argument('<task_id>', 'Task Id').argument('[message]', 'Comment Text')
   .option('-f, --file <filePath>', 'Read from file')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
@@ -88,7 +81,5 @@ function merge(opts, extra={}) {
   if (config.users[opts.assignee]) opts.assignee = config.users[opts.assignee]
   if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
   if (config.lists[opts.list]) opts.list = config.lists[opts.list]
-  return opts.json
-    ? Object.assign(config.defaults, opts, JSON.parse(opts.json), extra)
-    : Object.assign(config.defaults, opts, extra)
+  return Object.assign(config.defaults, opts, extra, opts.json && JSON.parse(opts.json))
 }
