@@ -14,7 +14,8 @@ capp.option('-d, --debug').option('-c, --config', 'Configuration File', os.homed
   .hook('preAction', async (cmd) => {
     config = JSON.parse(await fs.readFile(cmd.opts().config, 'utf8'))
     capi.defaults.headers.common['Authorization'] = config.auth
-    if (cmd.opts().debug) console.log('CONFIG:', config)
+    config.debug = cmd.opts().debug 
+    if (config.debug) console.log('CONFIG:', config)
   })
 
 capp.command('create').description('create task')
@@ -32,8 +33,9 @@ capp.command('create').description('create task')
   .action(async (name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
     if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
-    if (opts.debug) console.log('PAYLOAD:', data, opts)
-    return await capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).catch(console.log)
+    if (config.debug) console.log('PAYLOAD:', data, opts)
+    let res = await capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).catch(console.log)
+    console.log(config.debug ? res.data : res.data.id)
   })
 
 capp.command('update').description('update task')
@@ -52,7 +54,8 @@ capp.command('update').description('update task')
   .action(async (tid, name, desc, opts) => {
     let data = merge(opts, { name: name, content: desc})
     if (opts.file) data.markdown_description = await fs.readFile(opts.file, 'utf8')
-    return await capi.put('task/'+task_id, data).catch(console.log)
+    let res = await capi.put('task/'+task_id, data).catch(console.log)
+    console.log(config.debug ? res.data : res.data.id)
   })
 
 capp.command('delete').description('delete task')
