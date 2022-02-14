@@ -89,9 +89,8 @@ capp.command('comment')
 capp.parse()
 
 function merge(opts, extra={}) {
-  if (opts.config) config = require(opts.config)
   opts.assignees ??= opts.assignees.map(_ => config.users[_] || _)
-  opts.lists ??= opts.lists.map(a => config.lists[_] || _)
+  opts.lists ??= opts.lists.map(_ => config.lists[_] || _)
   return opts.json
     ? Object.assign(config.defaults, opts, JSON.parse(opts.json), extra)
     : Object.assign(config.defaults, opts, extra)
