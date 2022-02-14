@@ -1,6 +1,6 @@
 {
   "name": "clickup-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "Unofficial clickup cli",
   "main": "index.js",
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/sensor-indusries/clickup-cli#readme",
   "dependencies": {
+    "axios": "^0.26.0",
     "clickup_api": "^1.1.2",
     "commander": "^9.0.0"
   },
