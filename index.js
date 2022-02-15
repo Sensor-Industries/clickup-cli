@@ -5,13 +5,12 @@ import fs from 'fs'
 import os from 'os'
 import capi from 'axios'
 
-const err = (e) => console.log(e.response.status, e.response.data)
-const log = (r) => console.log(config.debug ? r.data : r.data.id)
-const read = f => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
+capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
+const err =  (e) => console.log(e.response.status, e.response.data)
+const log =  (r) => console.log(config.debug ? r.data : r.data.id)
+const read = (f) => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
 const capp = new Command()
 let config = {}
-
-capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
 
 const taskCmd = (app, name, desc) => app.command(name).description(desc)
   .option('-f, --file <filePath>', 'Markdown Description from file')
