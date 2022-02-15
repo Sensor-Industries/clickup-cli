@@ -8,7 +8,6 @@ import capi from 'axios'
 capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
 const err =  (e) => console.log(e.response.status, e.response.data)
 const log =  (r) => console.log(config.debug ? r.data : r.data.id)
-const read = (f) => fs.readFileSync(f, 'utf8').replace(/\`/g,'\`')
 const capp = new Command()
 let config = {}
 
@@ -36,17 +35,14 @@ capp.name('cu-cli').description('clickup cli')
 taskCmd(capp, 'create', 'Create task')
   .argument('<name>', 'Task Name')
   .action((name, opts) => {
-    let data = merge(opts, { name: name })
-    if (opts.file) data.markdown_description = read(opts.file)
-    if (config.debug) console.log('PAYLOAD:', data)
+    let data = merge(opts, { name: name }, 'markdown_description')
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
 taskCmd(capp, 'update', 'Update Task')
   .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name')
   .action((tid, name, opts) => {
-    let data = merge(opts, { name: name })
-    if (opts.file) data.markdown_description = read(opts.file)
+    let data = merge(opts, { name: name }, 'markdown_description')
     capi.put('task/'+tid, data).then(log).catch(err)
   })
 
@@ -59,17 +55,17 @@ capp.command('comment').description('add comment')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
   .action((tid, msg, opts) => {
-    let data = merge(opts, { comment_text: msg })
-    if (opts.file) data.comment_text = read(opts.file)
+    let data = merge(opts, { comment_text: msg }, 'comment_text')
     capi.post('task/'+tid+'/comment', data).then(log).catch(err)
   })
 
 capp.parse()
 
-function merge(opts, extra={}) {
+function merge(opts, extra={}, fileProp) {
   if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
   if (config.users[opts.assignee]) opts.assignee = config.users[opts.assignee]
   if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
   if (config.lists[opts.list]) opts.list = config.lists[opts.list]
+  if (fileProp && opts.file) opts[fileProp] = fs.readFileSync(opts.file,'utf8').replace(/\`/g,'\`')
   return Object.assign(config.defaults, opts, extra, opts.json && JSON.parse(opts.json))
 }
