@@ -21,6 +21,7 @@ const taskCmd = (app, name, desc) => app.command(name).description(desc)
   .option('-s, --status <status>', 'Task Status')
   .option('-p, --points <points>', 'Sprint Points')
   .option('-j, --json <json>', 'Custom Fields as JSON')
+  .option('-m, --content <markdown>', 'Task Description')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
 
 capp.name('cu-cli').description('clickup cli')
@@ -33,24 +34,23 @@ capp.name('cu-cli').description('clickup cli')
   })
 
 taskCmd(capp, 'create', 'Create task')
-  .argument('<name>', 'Task Name').argument('[desc]', 'Task Description')
-  .action((name, desc, opts) => {
-    let data = merge(opts, { name: name, content: desc})
+  .argument('<name>', 'Task Name')
+  .action((name, opts) => {
+    let data = merge(opts, { name: name })
     if (opts.file) data.markdown_description = read(opts.file)
     if (config.debug) console.log('PAYLOAD:', data)
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
 taskCmd(capp, 'update', 'Update Task')
-  .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name').argument('[desc]', 'Description')
-  .action((tid, name, desc, opts) => {
-    let data = merge(opts, { name: name, content: desc})
+  .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name')
+  .action((tid, name, opts) => {
+    let data = merge(opts, { name: name })
     if (opts.file) data.markdown_description = read(opts.file)
     capi.put('task/'+tid, data).then(log).catch(err)
   })
 
-capp.command('delete').description('Delete task')
-  .argument('<task_id>', 'Task Id')
+capp.command('delete').description('Delete task').argument('<task_id>', 'Task Id')
   .action((tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
 capp.command('comment').description('add comment')

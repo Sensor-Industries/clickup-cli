@@ -35,13 +35,12 @@ Commands:
 ```
 > cu-cli help create
 
-Usage: cu-cli create [options] <name> [desc]
+Usage: cu-cli create [options] <name>
 
 create task
 
 Arguments:
   name                            Task Name
-  desc                            Task Description
 
 Options:
   -f, --file <filePath>           Markdown Description from file
@@ -53,6 +52,7 @@ Options:
   -p, --points <points>           Sprint Points
   -j, --json <json>               Custom Fields as JSON
   -l, --list <list...>            comma seperated lists names or ids
+  -m, --description <markdown>    Markdown description
   -h, --help                      display help for command  ```
 ```
 
@@ -60,14 +60,13 @@ Options:
 ```
 > cu-cli help update
 
-Usage: cu-cli update [options] <task_id> [name] [desc]
+Usage: cu-cli update [options] <task_id> [name]
 
 update task
 
 Arguments:
   task_id                         Task Id
   name                            Task Name
-  desc                            Task Description
 
 Options:
   -f, --file <filePath>           Markdown Description from file
@@ -79,6 +78,7 @@ Options:
   -p, --points <points>           Sprint Points
   -j, --json <json>               Custom Fields as JSON
   -l, --list <list...>            comma seperated lists names or ids
+  -m, --description <markdown>    Markdown description
   -h, --help                      display help for command
 ```
 
