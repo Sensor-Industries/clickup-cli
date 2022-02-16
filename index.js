@@ -32,13 +32,15 @@ capp.name('cu-cli').description('clickup cli')
     if (config.debug) console.log('CONFIG:', config)
   })
 
-taskCmd(capp, 'create', 'Create task').argument('<name>', 'Task Name')
+taskCmd(capp, 'create', 'Create task')
+  .argument('<name>', 'Task Name')
   .action((name, opts) => {
     let data = merge(opts, { name: name }, 'markdown_description')
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
-taskCmd(capp, 'update', 'Update Task').argument('<task_id>', 'Task Id').argument('[name]', 'Task Name')
+taskCmd(capp, 'update', 'Update Task')
+  .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name')
   .action((tid, name, opts) => {
     let data = merge(opts, { name: name }, 'markdown_description')
     capi.put('task/'+tid, data).then(log).catch(err)
@@ -47,7 +49,8 @@ taskCmd(capp, 'update', 'Update Task').argument('<task_id>', 'Task Id').argument
 capp.command('delete').description('Delete task').argument('<task_id>', 'Task Id')
   .action((tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
-capp.command('comment').description('Add Comment').argument('<task_id>', 'Task Id').argument('[text]', 'Comment Text')
+capp.command('comment').description('Add Comment')
+  .argument('<task_id>', 'Task Id').argument('[text]', 'Comment Text')
   .option('-f, --file <filePath>', 'Read from file')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
