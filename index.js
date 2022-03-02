@@ -39,13 +39,9 @@ taskCmd(capp, 'create', 'Create task')
     capi.post('list/'+ (opts.list || config.defaults.list) +'/task', data).then(log).catch(err)
   })
 
-<<<<<<< HEAD
 taskCmd(capp, 'update', 'Update Task')
   .argument('<task_id>', 'Task Id')
   .argument('[name]', 'Task Name')
-=======
-taskCmd(capp, 'update', 'Update Task').argument('<task_id>', 'Task Id').argument('[name]', 'Task Name')
->>>>>>> ff79c8272826636aa0712e067304b0a181067572
   .action((tid, name, opts) => {
     let data = merge(opts, { name: name }, 'markdown_description')
     capi.put('task/'+tid, data).then(log).catch(err)
@@ -55,13 +51,9 @@ capp.command('delete').description('Delete task')
   .argument('<task_id>', 'Task Id')
   .action((tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
-<<<<<<< HEAD
 capp.command('comment').description('add comment')
   .argument('<task_id>', 'Task Id')
   .argument('[message]', 'Comment Text')
-=======
-capp.command('comment').description('Add Comment').argument('<task_id>', 'Task Id').argument('[text]', 'Comment Text')
->>>>>>> ff79c8272826636aa0712e067304b0a181067572
   .option('-f, --file <filePath>', 'Read from file')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
