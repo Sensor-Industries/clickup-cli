@@ -27,6 +27,8 @@ Commands:
   update [options] <task_id> [name] [desc]  update task
   delete <task_id>                          delete task
   comment [options] <task_id> [message]     add comment
+  list [options] <task_id> [name]        add checklist
+  item [options] <list_id> <item>        add checklist item
   help [command]                            display help for command
 ```
 
@@ -117,4 +119,42 @@ Options:
   -a, --assignee <user_id>  Assign to user
   -h, --help                display help for command
 ```
+
+### Create Checklist 
+
+```
+> cu-cli help list
+
+Usage: cu-cli list [options] <task_id> [name]
+
+add checklist
+
+Arguments:
+  task_id                Task Id
+  name                   Checklist name (default: "Checklist")
+
+Options:
+  -f, --file <filePath>  List of Items
+  -h, --help             display help for command
+```
+
+
+### Add Checklist Item
+```
+> cu-cli help item
+
+sage: cu-cli item [options] <list_id> <item>
+
+add checklist item
+
+Arguments:
+  list_id                   list Id
+  item                      Checklist Item
+
+Options:
+  -a, --assignee <user_id>  Assign to user
+  -h, --help                display help for command
+```
+
+
 

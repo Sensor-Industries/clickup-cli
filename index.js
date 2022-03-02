@@ -40,23 +40,46 @@ taskCmd(capp, 'create', 'Create task')
   })
 
 taskCmd(capp, 'update', 'Update Task')
-  .argument('<task_id>', 'Task Id').argument('[name]', 'Task Name')
+  .argument('<task_id>', 'Task Id')
+  .argument('[name]', 'Task Name')
   .action((tid, name, opts) => {
     let data = merge(opts, { name: name }, 'markdown_description')
     capi.put('task/'+tid, data).then(log).catch(err)
   })
 
-capp.command('delete').description('Delete task').argument('<task_id>', 'Task Id')
+capp.command('delete').description('Delete task')
+  .argument('<task_id>', 'Task Id')
   .action((tid, opts) => capi.delete('task/'+tid).then(log).catch(err))
 
 capp.command('comment').description('add comment')
-  .argument('<task_id>', 'Task Id').argument('[message]', 'Comment Text')
+  .argument('<task_id>', 'Task Id')
+  .argument('[message]', 'Comment Text')
   .option('-f, --file <filePath>', 'Read from file')
   .option('-n, --notify_all', 'Notify all')
   .option('-a, --assignee <user_id>', 'Assign to user')
   .action((tid, msg, opts) => {
     let data = merge(opts, { comment_text: msg }, 'comment_text')
     capi.post('task/'+tid+'/comment', data).then(log).catch(err)
+  })
+
+capp.command('list').description('add checklist')
+  .argument('<task_id>', 'Task Id')
+  .argument('[name]', 'Checklist name', 'Checklist')
+  .option('-f, --file <filePath>', 'List of Items')
+  .action((tid, msg, opts) => {
+    capi.post('task/'+tid+'/checklist', data).then(list => {
+      if (opts.file) for (let item of fs.readFileSync(opts.file,'utf8').split(/\n/)) {
+        capi.post('checklist/'+list.id+'/checklistitem', {name: item}).then(log).catch(err)
+      } else log(list)
+    }).catch(err)
+  })
+
+capp.command('item').description('add checklist item')
+  .argument('<list_id>', 'list Id')
+  .argument('<item>', 'Checklist Item')
+  .option('-a, --assignee <user_id>', 'Assign to user')
+  .action((cid, item, opts) => {
+    capi.post('checklist/'+cid+'/checklistitem', merge(opts,{name: item})).then(log).catch(err)
   })
 
 capp.parse()
