@@ -8,8 +8,19 @@ import capi from 'axios'
 capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
 const err =  (e) => console.log(e.response.status, e.response.data)
 const log =  (r) => console.log(config.debug ? r.data : r.data.id)
+const read = (f) => fs.readFileSync(f,'utf8').replace(/\`/g,'\`')
+
 const capp = new Command()
 let config = {}
+
+function merge(opts, extra={}, fileProp) {
+  if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
+  if (config.users[opts.assignee]) opts.assignee = config.users[opts.assignee]
+  if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
+  if (config.lists[opts.list]) opts.list = config.lists[opts.list]
+  if (fileProp && opts.file) opts[fileProp] = read(opts.file)
+  return Object.assign(config.defaults, opts, extra, opts.json && JSON.parse(opts.json))
+}
 
 const taskCmd = (app, name, desc) => app.command(name).description(desc)
   .option('-f, --file <filePath>', 'Markdown Description from file')
@@ -19,16 +30,17 @@ const taskCmd = (app, name, desc) => app.command(name).description(desc)
   .option('-e, --time_estimate <estimate>', 'Time Estimate (ms)')
   .option('-s, --status <status>', 'Task Status')
   .option('-p, --points <points>', 'Sprint Points')
+  .option('-n, --name <name>', 'Task Name')
   .option('-j, --json <json>', 'Custom Fields as JSON')
-  .option('-m, --content <markdown>', 'Task Description')
+  .option('-d, --description <description>', 'Task Description')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
 
-capp.name('cu-cli').description('clickup cli')
-  .option('-d, --debug').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
+capp.name('clickup').description('clickup cli')
+  .option('-v, --verbose').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
   .hook('preAction', (cmd) => {
     config = Object.assign({users:{}, lists:{}}, JSON.parse(read(cmd.opts().config)))
     capi.defaults.headers.common['Authorization'] = config.auth
-    config.debug = cmd.opts().debug
+    config.debug = cmd.opts().verbose
     if (config.debug) console.log('CONFIG:', config)
   })
 
@@ -62,33 +74,20 @@ capp.command('comment').description('add comment')
     capi.post('task/'+tid+'/comment', data).then(log).catch(err)
   })
 
-capp.command('list').description('add checklist')
+capp.command('check').description('add checklist')
   .argument('<task_id>', 'Task Id')
-  .argument('[name]', 'Checklist name', 'Checklist')
+  .argument('[item]', 'Checklist Item')
   .option('-f, --file <filePath>', 'List of Items')
-  .action((tid, msg, opts) => {
-    capi.post('task/'+tid+'/checklist', data).then(list => {
-      if (opts.file) for (let item of fs.readFileSync(opts.file,'utf8').split(/\n/)) {
-        capi.post('checklist/'+list.id+'/checklistitem', {name: item}).then(log).catch(err)
-      } else log(list)
-    }).catch(err)
-  })
-
-capp.command('item').description('add checklist item')
-  .argument('<list_id>', 'list Id')
-  .argument('<item>', 'Checklist Item')
-  .option('-a, --assignee <user_id>', 'Assign to user')
-  .action((cid, item, opts) => {
-    capi.post('checklist/'+cid+'/checklistitem', merge(opts,{name: item})).then(log).catch(err)
+  .option('-n, --name <name>', 'Checklist Name', 'Checklist')
+  .action(async (tid, item, opts) =>  {
+    try { 
+      let cid = (await capi.get('task/'+tid)).data.checklists.find(_ => _.name=opts.name)?.id 
+      cid = cid || (await capi.post('task/'+tid+'/checklist', {name: opts.name})).data.checklist.id
+      if (opts.file) for (let i of read(opts.file).split(/\n/)) {
+        capi.post('checklist/'+cid+'/checklist_item', {name: i}).then(log).catch(err)
+      } else capi.post('checklist/'+cid+'/checklist_item', {name: item}).then(log).catch(err) 
+    } catch (e) { err(e) }
   })
 
 capp.parse()
 
-function merge(opts, extra={}, fileProp) {
-  if (opts.assignees) opts.assignees = opts.assignees.map(_ => config.users[_] || _)
-  if (config.users[opts.assignee]) opts.assignee = config.users[opts.assignee]
-  if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
-  if (config.lists[opts.list]) opts.list = config.lists[opts.list]
-  if (fileProp && opts.file) opts[fileProp] = fs.readFileSync(opts.file,'utf8').replace(/\`/g,'\`')
-  return Object.assign(config.defaults, opts, extra, opts.json && JSON.parse(opts.json))
-}

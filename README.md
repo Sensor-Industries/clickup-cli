@@ -7,12 +7,12 @@ A Simple Command line Utility to create tasks, subtask and comments in clickup
 1. `> npm -i -g clickup-cli`
 2. `>cp ./config.json ~/.clickup`
 3. Edit `~/.clickup` to include approprioate defaults and auth token from your clickup account
-4. `> cu-cli help`
+4. `> cu help`
 
 ### Usage 
 
 ```
-> cu-cli help
+> cu help
 Usage: cu-cli [options] [command]
 
 clickup cli
@@ -35,9 +35,9 @@ Commands:
 
 ### Create Task
 ```
-> cu-cli help create
+> cu help create
 
-Usage: cu-cli create [options] <name>
+Usage: clickup create [options] <name>
 
 create task
 
@@ -60,9 +60,9 @@ Options:
 
 ### Update Task
 ```
-> cu-cli help update
+> cu help update
 
-Usage: cu-cli update [options] <task_id> [name]
+Usage: clup update [options] <task_id> [name]
 
 update task
 
@@ -86,7 +86,7 @@ Options:
 
 ### Delete Task
 ```
-> cu-cli help delete
+> cu help delete
 
 Usage: cu-cli delete [options] <task_id>
 
@@ -103,7 +103,7 @@ Options:
 ### Add Comment
 
 ```
-> cu-cli help comment
+> cu help comment
 
 Usage: clickup comment [options] <task_id> [message]
 
@@ -123,38 +123,18 @@ Options:
 ### Create Checklist 
 
 ```
-> cu-cli help list
-
-Usage: cu-cli list [options] <task_id> [name]
+> cu help check [options] <task_id> [item]
 
 add checklist
 
 Arguments:
   task_id                Task Id
-  name                   Checklist name (default: "Checklist")
+  item                   Checklist Item
 
 Options:
   -f, --file <filePath>  List of Items
+  -n, --name <name>      Checklist Name (default: "Checklist")
   -h, --help             display help for command
+
 ```
-
-
-### Add Checklist Item
-```
-> cu-cli help item
-
-sage: cu-cli item [options] <list_id> <item>
-
-add checklist item
-
-Arguments:
-  list_id                   list Id
-  item                      Checklist Item
-
-Options:
-  -a, --assignee <user_id>  Assign to user
-  -h, --help                display help for command
-```
-
-
 
