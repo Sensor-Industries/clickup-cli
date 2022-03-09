@@ -35,7 +35,7 @@ const taskCmd = (app, name, desc) => app.command(name).description(desc)
   .option('-d, --description <description>', 'Task Description')
   .option('-l, --list <list...>', 'comma seperated lists names or ids')
 
-capp.name('clickup').description('clickup cli')
+capp.name('clickup').description('clickup cli (v1.0.18)')
   .option('-v, --verbose').option('-c, --config', 'Configuration File', os.homedir() + '/.clickup')
   .hook('preAction', (cmd) => {
     config = Object.assign({users:{}, lists:{}}, JSON.parse(read(cmd.opts().config)))
