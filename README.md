@@ -12,7 +12,7 @@ A Simple Command line Utility to create tasks, subtask and comments in clickup
 ### Usage 
 
 ```
-> cu help
+> clickup help
 Usage: cu-cli [options] [command]
 
 clickup cli
@@ -35,7 +35,7 @@ Commands:
 
 ### Create Task
 ```
-> cu help create
+> clickup help create
 
 Usage: clickup create [options] <name>
 
@@ -60,7 +60,7 @@ Options:
 
 ### Update Task
 ```
-> cu help update
+> clickup help update
 
 Usage: clup update [options] <task_id> [name]
 
@@ -86,7 +86,7 @@ Options:
 
 ### Delete Task
 ```
-> cu help delete
+> clickup help delete
 
 Usage: cu-cli delete [options] <task_id>
 
@@ -103,7 +103,7 @@ Options:
 ### Add Comment
 
 ```
-> cu help comment
+> clickup help comment
 
 Usage: clickup comment [options] <task_id> [message]
 
@@ -123,7 +123,7 @@ Options:
 ### Create Checklist 
 
 ```
-> cu help check [options] <task_id> [item]
+> clickup help check [options] <task_id> [item]
 
 add checklist
 

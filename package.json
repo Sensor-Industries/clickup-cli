@@ -1,13 +1,13 @@
 {
   "name": "clickup-cli",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "type": "module",
   "description": "Unofficial clickup cli",
   "main": "index.js",
   "bin": {
     "cu-cli": "./index.js",
     "clickup": "./index.js",
-    "cu": "./index.js" 
+    "cu": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/sensor-indusries/clickup-cli#readme",
   "dependencies": {
     "axios": "^0.26.0",
+    "clickup-cli": "^1.0.17",
     "commander": "^9.0.0"
   },
   "devDependencies": {

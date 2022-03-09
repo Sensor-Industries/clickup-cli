@@ -855,10 +855,13 @@
   "resolved" "https://registry.npmjs.org/cjs-module-lexer/-/cjs-module-lexer-1.2.2.tgz"
   "version" "1.2.2"
 
-"clickup_api@^1.1.2":
-  "integrity" "sha512-r3qcHz2oAUqYw6BCfcRQx0KtIdZdNW1pEzGYxOy7mj2KWqyyZYjDxGwkkzN/mbWVEpkz2c+IRgJCgStAIC7gWw=="
-  "resolved" "https://registry.npmjs.org/clickup_api/-/clickup_api-1.1.2.tgz"
-  "version" "1.1.2"
+"clickup-cli@^1.0.17":
+  "integrity" "sha512-qYjV8l2IaqaX0ssksSW+oVskmfQaEweYrUDP5gofRpgOj2ug/bq3/4IqcuxIsvTCTOI63HCvKvfvuUGJwWukgA=="
+  "resolved" "https://registry.npmjs.org/clickup-cli/-/clickup-cli-1.0.17.tgz"
+  "version" "1.0.17"
+  dependencies:
+    "axios" "^0.26.0"
+    "commander" "^9.0.0"
 
 "cliui@^7.0.2":
   "integrity" "sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ=="
