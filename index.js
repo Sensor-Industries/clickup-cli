@@ -6,8 +6,8 @@ import os from 'os'
 import capi from 'axios'
 
 capi.defaults.baseURL = 'https://api.clickup.com/api/v2/'
-const err =  (e) => console.log(e.response.status, e.response.data)
-const log =  (r) => console.log(config.debug ? r.data : r.data.id)
+const err =  (e) => console.log(e.response.status, e.response?.data || e)
+const log =  (r) => console.log(config.debug ? (r.data || r) : (r.data?.id || r.id))
 const read = (f) => fs.readFileSync(f,'utf8').replace(/\`/g,'\`')
 
 const capp = new Command()
@@ -19,7 +19,7 @@ function merge(opts, extra={}, fileProp) {
   if (opts.lists) opts.lists = opts.lists.map(_ => config.lists[_] || _)
   if (config.lists[opts.list]) opts.list = config.lists[opts.list]
   if (fileProp && opts.file) opts[fileProp] = read(opts.file)
-  return Object.assign(config.defaults, opts, extra, opts.json && JSON.parse(opts.json))
+  return Object.assign({}, config.defaults, extra, opts, opts.json && JSON.parse(opts.json))
 }
 
 const taskCmd = (app, name, desc) => app.command(name).description(desc)
